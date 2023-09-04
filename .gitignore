@@ -1,0 +1,8 @@
+node_modules/
+.idea/
+.env
+!files-for-tests/.env
+logs/
+lib/
+coverage/
+package-lock.json
