@@ -97,18 +97,6 @@ const iterableResult = pathResolver(iterableData, 'items.*');
 console.log(iterableResult); // Output: ['Item A', 'Item B']
 ```
 
-### Special Characters and Escaping
-
-`object-path-resolver` handles special characters like dots (`.`) and asterisks (`*`) as part of property names. You can also escape these characters with a backslash (`\`) when needed:
-
-```typescript
-const specialCharacterResult = pathResolver(data, 'user.something.really.special');
-console.log(specialCharacterResult); // Output: 'Value'
-
-const escapedCharacterResult = pathResolver(data, 'user.something\\.really.special');
-console.log(escapedCharacterResult); // Output: 'Value'
-```
-
 ## Testing
 
 The library includes test cases to ensure its functionality. You can run the provided tests. Here's an example of how to run the tests:
