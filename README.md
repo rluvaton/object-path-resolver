@@ -146,7 +146,7 @@ Contributions to the `object-path-resolver` library are welcome. If you find any
 
 ## License
 
-This library is open-source and released under the MIT License. You can find the detailed license information in the [LICENSE](./LICENSE.md) file.
+This library is open-source and released under the MIT License. You can find the detailed license information in the [LICENSE](./LICENSE) file.
 
 ---
 
