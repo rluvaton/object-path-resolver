@@ -32,31 +32,101 @@ describe('pathResolver', () => {
       });
     });
 
-    it('should throw an error when trying to access __proto__ of an object', async () => {
-      class Person {
-        public a = 1;
-      }
+    describe('allowPrototypeAccess', () => {
+      describe.each([false, undefined])('allowPrototypeAccess: %s', (allowPrototypeAccess) => {
+        it('should throw an error when trying to access __proto__ of an object', async () => {
+          class Person {
+            public a = 1;
+          }
 
-      const data = new Person();
-      // @ts-expect-error typescript doesn't have type for this
-      data.__proto__.isAdmin = true;
+          const data = new Person();
+          // @ts-expect-error typescript doesn't have type for this
+          data.__proto__.isAdmin = true;
 
-      await expect(() => pathResolverWithSync(data, '__proto__.isAdmin')).rejects.toThrow(
-        'using prototype or __proto__ is not allowed',
-      );
-    });
+          await expect(() => pathResolverWithSync(data, '__proto__.isAdmin', { allowPrototypeAccess })).rejects.toThrow(
+            'using __proto__ is not allowed, you can enable it by passing allowPrototypeAccess: true',
+          );
+        });
 
-    it('should throw an error when trying to access prototype of an object', async () => {
-      function Person() {
-        // NoOp
-      }
+        it('should throw an error when trying to access prototype of an object', async () => {
+          function Person() {
+            // NoOp
+          }
 
-      // noinspection JSUnusedGlobalSymbols
-      Person.prototype.isAdmin = true;
+          // noinspection JSUnusedGlobalSymbols
+          Person.prototype.isAdmin = true;
 
-      await expect(() => pathResolverWithSync(Person, 'prototype.isAdmin')).rejects.toThrow(
-        'using prototype or __proto__ is not allowed',
-      );
+          await expect(() => pathResolverWithSync(Person, 'prototype.isAdmin')).rejects.toThrow(
+            'using prototype is not allowed, you can enable it by passing allowPrototypeAccess: true',
+          );
+        });
+
+        describe('when path came from cache', () => {
+          it('should throw an error when trying to access __proto__ of an object', async () => {
+            class Person {
+              public a = 1;
+            }
+
+            const data = new Person();
+            // @ts-expect-error typescript doesn't have type for this
+            data.__proto__.isAdmin = true;
+
+            const path = '__proto__.isAdmin';
+
+            // Just to have it in the cache
+            await pathResolverWithSync(data, path, { allowPrototypeAccess: true });
+
+            await expect(() => pathResolverWithSync(data, path, { allowPrototypeAccess })).rejects.toThrow(
+              'using __proto__ is not allowed, you can enable it by passing allowPrototypeAccess: true',
+            );
+          });
+
+          it('should throw an error when trying to access prototype of an object', async () => {
+            function Person() {
+              // NoOp
+            }
+
+            // noinspection JSUnusedGlobalSymbols
+            Person.prototype.isAdmin = true;
+
+            const path = 'prototype.isAdmin';
+
+            // Just to have it in the cache
+            await pathResolverWithSync(Person, path, { allowPrototypeAccess: true });
+
+            await expect(() => pathResolverWithSync(Person, path, { allowPrototypeAccess })).rejects.toThrow(
+              'using prototype is not allowed, you can enable it by passing allowPrototypeAccess: true',
+            );
+          });
+        });
+      });
+
+      describe('allowPrototypeAccess: true', () => {
+        it('should allow accessing __proto__ of an object', async () => {
+          class Person {
+            public a = 1;
+          }
+
+          const data = new Person();
+          // @ts-expect-error typescript doesn't have type for this
+          data.__proto__.isAdmin = true;
+
+          const value = await pathResolverWithSync(data, '__proto__.isAdmin', { allowPrototypeAccess: true });
+          expect(value).toEqual(true);
+        });
+
+        it('should allow accessing prototype of an object', async () => {
+          function Person() {
+            // NoOp
+          }
+
+          // noinspection JSUnusedGlobalSymbols
+          Person.prototype.isAdmin = true;
+
+          const value = await pathResolverWithSync(Person, 'prototype.isAdmin', { allowPrototypeAccess: true });
+          expect(value).toEqual(true);
+        });
+      });
     });
 
     describe('accessing missing values', () => {

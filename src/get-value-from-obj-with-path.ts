@@ -3,7 +3,12 @@ import { kAllItems, Path } from './convert-path-to-array-of-keys';
 export interface GetValueOptions {
   // What we be return when value is missing
   missing?: any;
+
+  // Allow prototype access
+  allowPrototypeAccess?: boolean;
 }
+
+const protoKeys = new Set(['prototype', '__proto__']);
 
 export async function getValueFromObjWithPath(obj: any, keys: Path, options: GetValueOptions): Promise<any> {
   let currentObj = obj;
@@ -31,8 +36,16 @@ export async function getValueFromObjWithPath(obj: any, keys: Path, options: Get
       return options.missing;
     }
 
-    if (typeof currentObj !== 'object' || currentObj === null || !(key in currentObj)) {
+    if ((typeof currentObj !== 'object' && typeof currentObj !== 'function') || currentObj === null) {
       return options.missing;
+    }
+
+    if (key !== 'prototype' && !(key in currentObj)) {
+      return options.missing;
+    }
+
+    if (protoKeys.has(key) && !options.allowPrototypeAccess) {
+      throw new Error(`using ${key} is not allowed, you can enable it by passing allowPrototypeAccess: true`);
     }
 
     // This does not support indexes in iterators...
@@ -72,8 +85,16 @@ export function syncGetValueFromObjWithPath(obj: any, keys: Path, options: GetVa
       return options.missing;
     }
 
-    if (typeof currentObj !== 'object' || currentObj === null || !(key in currentObj)) {
+    if ((typeof currentObj !== 'object' && typeof currentObj !== 'function') || currentObj === null) {
       return options.missing;
+    }
+
+    if (key !== 'prototype' && !(key in currentObj)) {
+      return options.missing;
+    }
+
+    if (protoKeys.has(key) && !options.allowPrototypeAccess) {
+      throw new Error(`using ${key} is not allowed, you can enable it by passing allowPrototypeAccess: true`);
     }
 
     // This does not support indexes in iterators...
