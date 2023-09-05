@@ -44,13 +44,14 @@ console.log(result); // Output: 'John Doe'
 In this example, we imported the `pathResolver` function and used it to access the deeply nested property `user.profile.name` within the `data` object.
 
 ## Notes
+- **Evaluate functions**: `object-path-resolver` evaluates functions and returns their results by default (a PR to allow disabling it is welcome).
 - **Empty Strings as Keys**: `object-path-resolver` does not support empty strings as keys.
 - **Special Characters**: Special characters such as backslash (`\`), dot (`.`), and asterisk (`*`) need to be escaped with a backslash (`\`) if you want to use them as plain actual key characters.
 - **Indexes in iterators**: Indexes in iterators are not supported (a PR for this feature is welcome!)
 - **prototype**: Accessing `prototype` or `__proto__` is not allowed by default due to security concerns (you can enable it by passing `allowPrototypeAccess: true`).
 
 ## API
-- `sync`: Optional boolean value that specifies whether to resolve properties synchronously or asynchronously. Defaults to `true`.
+- `sync`: Optional boolean value that specifies whether to resolve properties synchronously or asynchronously. Defaults to `false`.
 - `missing`: Optional value to return when the specified property is not found. Defaults to `undefined`.
 - `allowPrototypeAccess`: Optional boolean value that specifies whether to allow access to `prototype` or `__proto__`. Defaults to `false`.
 
@@ -61,8 +62,36 @@ In this example, we imported the `pathResolver` function and used it to access t
 `object-path-resolver` supports both synchronous and asynchronous property resolution. You can specify whether you want to resolve properties synchronously or asynchronously using the `sync` option:
 
 ```typescript
-const syncResult = pathResolver(data, path, { sync: true }); // Synchronous
-const asyncResult = pathResolver(data, path, { sync: false }); // Asynchronous
+const value = await pathResolver(
+    {
+        one: [
+            Promise.resolve('hello'),
+            Promise.resolve('world')
+        ]
+    },
+    'one.1',
+    { sync: false } // sync: false is the default
+);
+
+console.log(value); // Output: 'world'
+```
+
+### Function evaluation
+
+`object-path-resolver` evaluate function by default (a PR to allow disabling it via option is welcome)
+
+```typescript
+const value = await pathResolver(
+    {
+        one: [
+            () => 'hello',
+            () => 'world'
+        ]
+    },
+    'one.1'
+);
+
+console.log(value); // Output: 'world'
 ```
 
 ### Custom Missing Value
