@@ -1,5 +1,7 @@
 # Object Path Resolver
 
+[![npm](https://img.shields.io/npm/v/object-path-resolver)](https://www.npmjs.com/package/object-path-resolver)
+
 **Object Path Resolver** is a TypeScript library that provides a flexible and efficient way to resolve nested property paths within JavaScript objects. It allows you to access deeply nested properties, arrays, and even iterate over them asynchronously. This README will guide you through using and understanding the library.
 
 ## Installation
