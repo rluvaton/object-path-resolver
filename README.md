@@ -45,7 +45,7 @@ In this example, we imported the `pathResolver` function and used it to access t
 
 ## Notes
 - **Evaluate functions**: `object-path-resolver` evaluates functions and returns their results by default (a PR to allow disabling it is welcome).
-- **Empty Strings as Keys**: `object-path-resolver` does not support empty strings as keys.
+- **Empty Strings as Keys**: `object-path-resolver` does not support empty strings as keys. (a fix is welcome)
 - **Special Characters**: Special characters such as backslash (`\`), dot (`.`), and asterisk (`*`) need to be escaped with a backslash (`\`) if you want to use them as plain actual key characters.
 - **Indexes in iterators**: Indexes in iterators are not supported (a PR for this feature is welcome!)
 - **prototype**: Accessing `prototype` or `__proto__` is not allowed by default due to security concerns (you can enable it by passing `allowPrototypeAccess: true`).
