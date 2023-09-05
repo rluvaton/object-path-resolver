@@ -10,6 +10,7 @@ export interface PathResolverOptions extends GetValueOptions {
 const defaultOptions: PathResolverOptions = {
   missing: undefined,
   sync: false,
+  allowPrototypeAccess: false,
 };
 
 // We do not support empty strings as keys
@@ -19,7 +20,7 @@ export function pathResolver<Options extends PathResolverOptions = PathResolverO
   path: string,
   options: Options = defaultOptions as Options,
 ): Options['sync'] extends true ? any : Promise<any> {
-  const parsedPath = convertPathToArrayOfKeys(path);
+  const parsedPath = convertPathToArrayOfKeys(path, { allowPrototypeAccess: options.allowPrototypeAccess });
 
   if (options.sync) {
     return syncGetValueFromObjWithPath(obj, parsedPath, options);

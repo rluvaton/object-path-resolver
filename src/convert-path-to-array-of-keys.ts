@@ -9,7 +9,14 @@ const cache = new LRUCache<string, Path>({
   max: 1000,
 });
 
-export function convertPathToArrayOfKeys(path: string): Path {
+export function convertPathToArrayOfKeys(
+  path: string,
+  {
+    allowPrototypeAccess = false,
+  }: {
+    allowPrototypeAccess?: boolean;
+  } = {},
+): Path {
   const pathFromCache = cache.get(path);
   if (pathFromCache) {
     return pathFromCache;
@@ -44,8 +51,8 @@ export function convertPathToArrayOfKeys(path: string): Path {
     }
 
     if (char === '.') {
-      if (currentKey === 'prototype' || currentKey === '__proto__') {
-        throw new Error('using prototype or __proto__ is not allowed');
+      if (!allowPrototypeAccess && (currentKey === 'prototype' || currentKey === '__proto__')) {
+        throw new Error(`using ${currentKey} is not allowed, you can enable it by passing allowPrototypeAccess: true`);
       }
 
       keys.push(currentKey);
